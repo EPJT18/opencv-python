@@ -18,6 +18,10 @@ def main():
     build_contrib = get_build_env_var_by_name("contrib")
     # headless flag to skip GUI deps if needed
     build_headless = get_build_env_var_by_name("headless")
+    build_swoop_jetson = get_build_env_var_by_name("swoop_jetson")
+    if build_swoop_jetson:
+        build_headless = True
+        build_contrib = True
 
     # Only import 3rd-party modules after having installed all the build dependencies:
     # any of them, or their dependencies, can be updated during that process,
@@ -122,7 +126,7 @@ def main():
         "-DBUILD_TESTS=OFF",
         "-DBUILD_PERF_TESTS=OFF",
         "-DBUILD_DOCS=OFF"
-    ] + (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else [])
+    ] + (["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")] if build_contrib else []) + (["-DOPENCV_SWOOP_JETSON=ON", "-DBUILD_LIST=aruco"] if build_swoop_jetson else [])
 
     # OS-specific components
     if sys.platform.startswith('linux') and not build_headless:
